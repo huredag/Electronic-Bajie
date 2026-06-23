@@ -318,7 +318,7 @@ static int lcd_write_color(const uint8_t *data, uint32_t len)
     s_cmd.alt.disabled          = true;
     s_cmd.dummy_count           = 0;
     s_cmd.data.bus_width        = OSPI_LINE_QUAD;          /* 色数据走四线 */
-    s_cmd.data.frame_len        = 8;
+    s_cmd.data.frame_len        = 16;
     s_cmd.data.transfer_mode    = OSPI_TRANSFER_SEND_ONLY;
     s_cmd.data.disabled         = false;
 
