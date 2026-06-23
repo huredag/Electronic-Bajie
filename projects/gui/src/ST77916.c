@@ -324,9 +324,15 @@ static int lcd_write_color(const uint8_t *data, uint32_t len)
 
     csi_ospi_config(&s_ospi, &s_cmd);
 
+    /* 降低色数据波特率到 ~2MHz，诊断是否为 FIFO 下溢 */
+    csi_ospi_baud(&s_ospi, 2000000);
+
     LCD_CS_LOW();
     ret = csi_ospi_send(&s_ospi, data, len, LCD_OSPI_TIMEOUT);
     LCD_CS_HIGH();
+
+    /* 恢复原波特率 */
+    csi_ospi_baud(&s_ospi, LCD_OSPI_BAUD_HZ);
 
     if ((uint32_t)ret != len) {
         return -1;
@@ -490,6 +496,23 @@ static void test_draw_bitmap(void)
     printf("LCD: color bar drawn\r\n");
 }
 
+static void test_solid_fill(void)
+{
+    static uint16_t line[EXAMPLE_LCD_WIDTH];
+    const uint16_t colors[] = {0xF800, 0x07E0, 0x001F}; /* 红、绿、蓝 */
+
+    for (uint32_t c = 0; c < 3; c++) {
+        for (uint32_t x = 0; x < EXAMPLE_LCD_WIDTH; x++) {
+            line[x] = colors[c];
+        }
+        for (uint16_t y = 0; y < EXAMPLE_LCD_HEIGHT; y++) {
+            LCD_addWindow(0, y, EXAMPLE_LCD_WIDTH - 1, y, line);
+        }
+        printf("LCD: solid fill color=0x%04X done\r\n", colors[c]);
+        mdelay(2000);
+    }
+}
+
 /* ===========================================================================
  * 背光（GPIO 开关式，替代原 LEDC PWM）
  * =========================================================================*/
@@ -532,4 +555,6 @@ void LCD_Init(void)
     Backlight_Init();   /* 先点亮背光（与显示初始化解耦，便于判断背光是否正常） */
     ST77916_Init();     /* 复位 + OSPI + 命令表 */
     test_draw_bitmap(); /* 彩条自测 */
+    mdelay(2000);
+    test_solid_fill();  /* 红绿蓝全屏纯色测试 */
 }
