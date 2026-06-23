@@ -324,8 +324,8 @@ static int lcd_write_color(const uint8_t *data, uint32_t len)
 
     csi_ospi_config(&s_ospi, &s_cmd);
 
-    /* 降低色数据波特率到 ~2MHz，诊断是否为 FIFO 下溢 */
-    csi_ospi_baud(&s_ospi, 2000000);
+  
+    csi_ospi_baud(&s_ospi, 10 * 1000000);
 
     LCD_CS_LOW();
     ret = csi_ospi_send(&s_ospi, data, len, LCD_OSPI_TIMEOUT);
