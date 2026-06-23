@@ -1,0 +1,39 @@
+{
+    "configurations": [
+        {
+            "name": "CDK_TD1601",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/boards/td1601_evb/v1.0/include",
+                "${workspaceFolder}/components/chips/chip_td1601/v1.0/include",
+                "${workspaceFolder}/components/csi/v1.0/include",
+                "${workspaceFolder}/components/minilibc/v1.0/include",
+                "${workspaceFolder}/components/mm/v1.0/include",
+                "${workspaceFolder}/projects/*/include"
+            ],
+            "defines": [
+                 "__CSKY__",
+                "CK802",
+                "CONFIG_ARCH_INTERRUPTSTACK",
+                "CONFIG_BENCHMARK",
+                "CONFIG_BENCHMARK_COREMARK",
+                "CONFIG_BENCHMARK_DHRY",
+                "CONFIG_CHIP_TD1601",
+                "CONFIG_CPU_E906FD",
+                "CONFIG_DEBUG_MODE",
+                "CONFIG_KERNEL_NONE",
+                "CONFIG_SUPPORT_TSPEND",
+                "CONFIG_XIP",
+                "CONFIG_BOARD_TD1601_EVB",
+                "CONFIG_DRIVER_GPIO",
+                "CONFIG_DRIVER_UART",
+                "CONFIG_DRIVER_DMA"
+            ],
+            "compilerPath": "D:/sort/C-Sky/CDKRepo/Toolchain/CKV1ElfMinilib/V3.10.29/R/bin/csky-elf-gcc.exe",
+            "cStandard": "c99",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "linux-clang-x86"
+        }
+    ],
+    "version": 4
+}
