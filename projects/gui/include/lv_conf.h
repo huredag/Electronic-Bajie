@@ -115,9 +115,9 @@
 /*-------------
  * Others
  *-----------*/
-#define LV_USE_PERF_MONITOR 0
+#define LV_USE_PERF_MONITOR 1
 #if LV_USE_PERF_MONITOR
-    #define LV_USE_PERF_MONITOR_POS LV_ALIGN_TOP_LEFT
+    #define LV_USE_PERF_MONITOR_POS LV_ALIGN_BOTTOM_MID
 #endif
 
 #define LV_USE_MEM_MONITOR 0
