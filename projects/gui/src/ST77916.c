@@ -324,8 +324,8 @@ static int lcd_write_color(const uint8_t *data, uint32_t len)
 
     csi_ospi_config(&s_ospi, &s_cmd);
 
-  
-    csi_ospi_baud(&s_ospi, 10 * 1000000);
+
+    csi_ospi_baud(&s_ospi, 3 * 1000000);
 
     LCD_CS_LOW();
     ret = csi_ospi_send(&s_ospi, data, len, LCD_OSPI_TIMEOUT);
@@ -486,6 +486,7 @@ static void test_draw_bitmap(void)
     for (uint32_t b = 0; b < bands; b++) {
         for (uint32_t x = 0; x < EXAMPLE_LCD_WIDTH; x++) {
             line[x] = colors[b];
+            
         }
         uint16_t y0 = (uint16_t)(b * band_h);
         uint16_t y1 = (uint16_t)((b == bands - 1) ? (EXAMPLE_LCD_HEIGHT - 1) : (y0 + band_h - 1));
@@ -549,12 +550,23 @@ void Set_Backlight(uint8_t Light)
 /* ===========================================================================
  * 对外初始化总入口
  * =========================================================================*/
+/* 全屏清黑：填充显存为 0x0000，避免 LVGL 启动前 LCD RAM 残留杂色 */
+static void lcd_clear_screen(void)
+{
+    static uint16_t line[EXAMPLE_LCD_WIDTH];
+    memset(line, 0x00, sizeof(line));
+    for (uint16_t y = 0; y < EXAMPLE_LCD_HEIGHT; y++) {
+        LCD_addWindow(0, y, EXAMPLE_LCD_WIDTH - 1, y, line);
+    }
+}
+
 void LCD_Init(void)
 {
     lcd_gpio_init();    /* CS/复位/背光 GPIO 配置 */
     Backlight_Init();   /* 先点亮背光（与显示初始化解耦，便于判断背光是否正常） */
     ST77916_Init();     /* 复位 + OSPI + 命令表 */
-    test_draw_bitmap(); /* 彩条自测 */
-    mdelay(2000);
-    test_solid_fill();  /* 红绿蓝全屏纯色测试 */
+    lcd_clear_screen(); /* 清黑整屏，防止残留杂色 */
+    // test_draw_bitmap(); /* 彩条自测 */
+    // mdelay(2000);
+    // test_solid_fill();  /* 红绿蓝全屏纯色测试 */
 }

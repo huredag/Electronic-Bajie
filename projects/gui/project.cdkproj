@@ -19,6 +19,9 @@
   </Packages>
   <MergedToYaml>yes</MergedToYaml>
   <Dependencies Name="BuildSet"/>
+  <VendorInfo>
+    <VendorName>NULL</VendorName>
+  </VendorInfo>
   <DebugSessions>
     <watchExpressions/>
     <memoryExpressions/>
@@ -28,7 +31,15 @@
     <LocalDisplayFormat/>
     <debugLayout/>
     <memoryTabColSizeExpressions/>
+    <QuickWatchDisplayFormat/>
   </DebugSessions>
+  <ToolsConfig>
+    <Compiler>
+      <Name>XTGccElfNewlib</Name>
+      <Version>latest</Version>
+    </Compiler>
+  </ToolsConfig>
+  <PackPathes>$(ProjectPath)/../../boards|$(ProjectPath)/../../components|$(ProjectPath)/../../components/lvgl|</PackPathes>
   <BuildConfigs>
     <BuildConfig Name="BuildSet">
       <Target>
@@ -107,21 +118,25 @@
         <Preprocessor>no</Preprocessor>
         <Disassmeble>yes</Disassmeble>
         <CallGraph>no</CallGraph>
-        <GenMap>yes</GenMap>
+        <Map>yes</Map>
       </Output>
       <User>
         <BeforeCompile>
           <RunUserProg>no</RunUserProg>
           <UserProgName/>
+          <IsBatchScript>no</IsBatchScript>
         </BeforeCompile>
         <BeforeMake>
           <RunUserProg>yes</RunUserProg>
           <UserProgName>"$(ProjectPath)utilities/pre_build.sh"</UserProgName>
+          <IsBatchScript>no</IsBatchScript>
         </BeforeMake>
         <AfterMake>
           <RunUserProg>yes</RunUserProg>
           <UserProgName>"$(ProjectPath)utilities/aft_build.sh"</UserProgName>
+          <IsBatchScript>no</IsBatchScript>
         </AfterMake>
+        <Tools/>
       </User>
       <Compiler>
         <Define/>
@@ -139,6 +154,7 @@
         <AllWarn>yes</AllWarn>
         <WarnErr>no</WarnErr>
         <OneElfS>no</OneElfS>
+        <OneElfSPerData>no</OneElfSPerData>
         <Fstrict>no</Fstrict>
       </Compiler>
       <Asm>
@@ -150,12 +166,14 @@
       </Asm>
       <Linker>
         <Garbage>yes</Garbage>
+        <Garbage2>yes</Garbage2>
         <LDFile/>
         <LibName/>
         <LibPath/>
         <OtherFlags/>
         <AutoLDFile>no</AutoLDFile>
         <LinkType>whole-archive</LinkType>
+        <IncludeAllLibs>no</IncludeAllLibs>
       </Linker>
       <Debug>
         <LoadApplicationAtStartup>yes</LoadApplicationAtStartup>
@@ -163,21 +181,27 @@
         <StopAt>yes</StopAt>
         <StopAtText>main</StopAtText>
         <InitFile>$(ProjectPath)utilities/gdb.init</InitFile>
+        <PreInit/>
+        <AfterLoadFile/>
         <AutoRun>yes</AutoRun>
         <ResetType>Hard Reset</ResetType>
         <SoftResetVal>0</SoftResetVal>
         <ResetAfterLoad>no</ResetAfterLoad>
+        <AfterResetFile/>
         <Dumpcore>no</Dumpcore>
         <DumpcoreText>$(ProjectPath)$(ProjectName).cdkcore</DumpcoreText>
+        <SVCFile/>
         <ConfigICE>
           <IP>localhost</IP>
           <PORT>1025</PORT>
           <CPUNumber>0</CPUNumber>
           <Clock>12000</Clock>
           <Delay>10</Delay>
+          <NResetDelay>100</NResetDelay>
           <WaitReset>500</WaitReset>
           <DDC>yes</DDC>
           <TRST>no</TRST>
+          <PreReset>no</PreReset>
           <DebugPrint>no</DebugPrint>
           <Connect>Normal</Connect>
           <ResetType>Soft Reset</ResetType>
@@ -188,6 +212,12 @@
           <GDBName/>
           <GDBServerType>Local</GDBServerType>
           <OtherFlags/>
+          <ICEEnablePCSampling>no</ICEEnablePCSampling>
+          <ICESamplingFreq>1000</ICESamplingFreq>
+          <RemoteICEEnablePCSampling>no</RemoteICEEnablePCSampling>
+          <RemoteICESamplingPort>1026</RemoteICESamplingPort>
+          <Version>latest</Version>
+          <SupportRemoteICEAsyncDebug>no</SupportRemoteICEAsyncDebug>
         </ConfigICE>
         <ConfigSIM>
           <SIMTarget>soccfg/nstar/rhea802.xml</SIMTarget>
@@ -195,25 +225,36 @@
           <NoGraphic>yes</NoGraphic>
           <Log>no</Log>
           <SimTrace>no</SimTrace>
+          <Version>latest</Version>
         </ConfigSIM>
+        <ConfigOpenOCD>
+          <OpenOCDExecutablePath/>
+          <OpenOCDTelnetPortEnable>no</OpenOCDTelnetPortEnable>
+          <OpenOCDTelnetPort>4444</OpenOCDTelnetPort>
+          <OpenOCDTclPortEnable>no</OpenOCDTclPortEnable>
+          <OpenOCDTclPort>6666</OpenOCDTclPort>
+          <OpenOCDConfigOptions/>
+          <OpenOCDTimeout>5000</OpenOCDTimeout>
+          <PluginID>openocd-sifive</PluginID>
+          <Version>latest</Version>
+        </ConfigOpenOCD>
       </Debug>
       <Flash>
         <InitFile>$(ProjectPath)utilities/flash.init</InitFile>
+        <PreInit/>
         <Erase>Erase Sectors</Erase>
-        <Algorithms Path="$(ProjectPath)utilities/">./utilities/td1601_flash_cdk.elf</Algorithms>
+        <Algorithms Path="">$(ProjectPath)/utilities/td1601_flash_cdk.elf</Algorithms>
         <Program>yes</Program>
         <Verify>yes</Verify>
         <ResetAndRun>no</ResetAndRun>
-        <ResetType>no</ResetType>
+        <ResetType>Soft Reset</ResetType>
         <SoftResetVal/>
+        <FlashIndex>no</FlashIndex>
+        <FlashIndexVal>0</FlashIndexVal>
         <External>no</External>
         <Command/>
         <Arguments/>
       </Flash>
     </BuildConfig>
   </BuildConfigs>
-  <PackPathes>$(ProjectPath)/../../boards|$(ProjectPath)/../../components</PackPathes>
-  <VendorInfo>
-    <VendorName>NULL</VendorName>
-  </VendorInfo>
 </Project>

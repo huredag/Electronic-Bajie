@@ -15,6 +15,7 @@ depends:
   - chip_td1601: V1.0.0
   - console: V1.0.0
   - csi: V1.0.0
+  - lvgl: V8.3.11
   - minilibc: V1.0.0
   - mm: V1.0.0
   - td1601_evb: V1.0.0
@@ -44,15 +45,16 @@ build_config:
   include:
     - include
     - include/sys
+    - ../../components/lvgl/
   internal_include: 
-  cflag: -Os -g
-  cxxflag: -Os -g
+  cflag: -Os  -g -DLV_CONF_INCLUDE_SIMPLE
+  cxxflag: -Os  -g -DLV_CONF_INCLUDE_SIMPLE
   asmflag: ""
   define: 
   libs:
     - m
   libpath: 
-  ldflag: "-nostartfiles -Wl,--gc-sections -lm  -Wl,-zmax-page-size=1024\n"
+  ldflag: -nostartfiles -Wl,--gc-sections -lm  -Wl,-zmax-page-size=1024
 # source_file:                             # <可选项> 指定参与编译的源代码文件，支持通配符，采用相对路径
 #   - src/*.c                              # 例：组件 src 目录下所有的扩展名为 c 的源代码文件
 source_file:
@@ -81,6 +83,7 @@ depends_forward:
   - chip_td1601: V1.0.0
   - console: V1.0.0
   - csi: V1.0.0
+  - lvgl: V8.3.11
   - minilibc: V1.0.0
   - mm: V1.0.0
   - td1601_evb: V1.0.0

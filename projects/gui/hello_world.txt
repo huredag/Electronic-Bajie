@@ -1,1 +1,1 @@
-Obj/chip_config.o Obj/src_CST816.o Obj/src_ST77916.o Obj/src_board_init.o Obj/src_gpio_toggle.o Obj/src_main.o 
+Obj/chip_config.o Obj/src_CST816.o Obj/src_ST77916.o Obj/src_board_init.o Obj/src_gpio_toggle.o Obj/src_lv_port_disp.o Obj/src_lv_port_indev.o Obj/src_main.o 
