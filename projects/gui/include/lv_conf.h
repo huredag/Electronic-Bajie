@@ -143,7 +143,7 @@
 /* ===========================================================================
  * 调试/监控工具
  * =========================================================================*/
-#define LV_USE_PERF_MONITOR 1           /* 性能监视器：显示 FPS 和 CPU 占用 */
+#define LV_USE_PERF_MONITOR 0           /* 性能监视器：0=关闭（避免频繁分配内存导致碎片化崩溃） */
 #if LV_USE_PERF_MONITOR
     #define LV_USE_PERF_MONITOR_POS LV_ALIGN_BOTTOM_MID /* 显示位置：屏幕底部居中 */
 #endif

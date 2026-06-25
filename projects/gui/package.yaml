@@ -47,8 +47,8 @@ build_config:
     - include/sys
     - ../../components/lvgl/
   internal_include: 
-  cflag: -Os  -g -DLV_CONF_INCLUDE_SIMPLE
-  cxxflag: -Os  -g -DLV_CONF_INCLUDE_SIMPLE
+  cflag: -O1  -g -DLV_CONF_INCLUDE_SIMPLE
+  cxxflag: -O1  -g -DLV_CONF_INCLUDE_SIMPLE
   asmflag: ""
   define: 
   libs:
@@ -68,7 +68,7 @@ source_file:
 #   CONFIG_CLI: y
 def_config:
   CONFIG_KERNEL_NONE: 1
-  CONFIG_ARCH_INTERRUPTSTACK: 4096
+  CONFIG_ARCH_INTERRUPTSTACK: 16384
   CONFIG_DEBUG_MODE: 1
   CONFIG_XIP: 1
   CONFIG_BENCHMARK: 1
@@ -88,7 +88,7 @@ depends_forward:
   - mm: V1.0.0
   - td1601_evb: V1.0.0
 defconfig:
-  CONFIG_ARCH_INTERRUPTSTACK: 4096
+  CONFIG_ARCH_INTERRUPTSTACK: 16384
   CONFIG_BENCHMARK: 1
   CONFIG_BENCHMARK_COREMARK: 1
   CONFIG_BENCHMARK_DHRY: 1

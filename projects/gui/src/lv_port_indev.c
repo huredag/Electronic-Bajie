@@ -42,6 +42,8 @@ static void touchpad_read(lv_indev_drv_t *drv, lv_indev_data_t *data)
         data->point.x = touch.x;        /* 触摸 X 坐标 */
         data->point.y = touch.y;        /* 触摸 Y 坐标 */
         data->state   = LV_INDEV_STATE_PRESSED;
+        // printf("touch: x=%d y=%d points=%d\r\n",  data->point.x, data->point.y, touch.points);
+
     } else {
         data->state = LV_INDEV_STATE_RELEASED;
     }

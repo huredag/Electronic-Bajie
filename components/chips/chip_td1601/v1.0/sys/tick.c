@@ -80,8 +80,16 @@ uint64_t csi_tick_get_ms(void)
 {
 #if 1
     uint32_t count = (soc_get_cur_cpu_freq() / 1000);
-    uint64_t time = (uint64_t)((uint64_t)CORET->MTIMEHI << 32) | (CORET->MTIMELO);
-    return time/count;
+    /* 读 64 位 MTIME 需要防止 MTIMELO 溢出导致高低不一致：
+     * 连续读两次 MTIMEHI，若不相等说明中间发生了翻转，重读 */
+    uint32_t hi1, lo, hi2;
+    do {
+        hi1 = CORET->MTIMEHI;
+        lo  = CORET->MTIMELO;
+        hi2 = CORET->MTIMEHI;
+    } while (hi1 != hi2);
+    uint64_t time = ((uint64_t)hi2 << 32) | lo;
+    return time / count;
 #else
     uint32_t time = last_time_ms, freq;
     //freq = csi_timer_get_load_value(&tick_timer) * CONFIG_SYSTICK_HZ;
@@ -251,9 +259,20 @@ static void _10udelay(void)
 void udelay(uint32_t us)
 {
     uint32_t count = us * (soc_get_cur_cpu_freq() / 1000000);
-    uint64_t start_time = (uint64_t)((uint64_t)CORET->MTIMEHI << 32) | (CORET->MTIMELO);
+    uint32_t hi1, lo, hi2;
+    do {
+        hi1 = CORET->MTIMEHI;
+        lo  = CORET->MTIMELO;
+        hi2 = CORET->MTIMEHI;
+    } while (hi1 != hi2);
+    uint64_t start_time = ((uint64_t)hi2 << 32) | lo;
     uint64_t update_time = 0;
     do {
-        update_time = (uint64_t)((uint64_t)CORET->MTIMEHI << 32) | (CORET->MTIMELO);
+        do {
+            hi1 = CORET->MTIMEHI;
+            lo  = CORET->MTIMELO;
+            hi2 = CORET->MTIMEHI;
+        } while (hi1 != hi2);
+        update_time = ((uint64_t)hi2 << 32) | lo;
     } while((update_time - start_time) < count);
 }
