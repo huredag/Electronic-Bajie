@@ -10,7 +10,7 @@ ProjectPath            :=./
 IntermediateDirectory  :=Obj
 OutDir                 :=$(IntermediateDirectory)
 User                   :=006106
-Date                   :=24/06/2026
+Date                   :=25/06/2026
 CDKPath                :=../../../../../../CDK
 ToolchainPath          :=D:/sort/C-Sky/CDKRepo/Toolchain/XTGccElfNewlib/V2.6.1/R/
 LinkerName             :=riscv64-unknown-elf-gcc
@@ -66,13 +66,15 @@ CC       :=riscv64-unknown-elf-gcc
 AS       :=riscv64-unknown-elf-gcc
 OBJDUMP  :=riscv64-unknown-elf-objdump
 OBJCOPY  :=riscv64-unknown-elf-objcopy
-CXXFLAGS := $(PreprocessorSwitch)USE_CHIP_TD1601 $(PreprocessorSwitch)USE_CONSOLE $(PreprocessorSwitch)USE_CSI $(PreprocessorSwitch)USE_LVGL $(PreprocessorSwitch)USE_MINILIBC $(PreprocessorSwitch)USE_MM $(PreprocessorSwitch)USE_TD1601_EVB   -Os -g  -Os -g $(PreprocessorSwitch)CONFIG_ARCH_INTERRUPTSTACK=4096 $(PreprocessorSwitch)CONFIG_BENCHMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_COREMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_DHRY=1 $(PreprocessorSwitch)CONFIG_CHIP_TD1601=1 $(PreprocessorSwitch)CONFIG_CPU_E906FD=1 $(PreprocessorSwitch)CONFIG_DEBUG_MODE=1 $(PreprocessorSwitch)CONFIG_KERNEL_NONE=1 $(PreprocessorSwitch)CONFIG_SUPPORT_TSPEND=1 $(PreprocessorSwitch)CONFIG_XIP=1   -mcpu=e906fd   -Os  -g -DLV_CONF_INCLUDE_SIMPLE 
-CFLAGS   := $(PreprocessorSwitch)USE_CHIP_TD1601 $(PreprocessorSwitch)USE_CONSOLE $(PreprocessorSwitch)USE_CSI $(PreprocessorSwitch)USE_LVGL $(PreprocessorSwitch)USE_MINILIBC $(PreprocessorSwitch)USE_MM $(PreprocessorSwitch)USE_TD1601_EVB   -Wno-unused-function -O2 -g -nostdlib -Wpointer-arith -Wall -Wl,-EL -ffunction-sections -fdata-sections -fdata-sections -Os -g  $(PreprocessorSwitch)CONFIG_ARCH_INTERRUPTSTACK=4096 $(PreprocessorSwitch)CONFIG_BENCHMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_COREMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_DHRY=1 $(PreprocessorSwitch)CONFIG_CHIP_TD1601=1 $(PreprocessorSwitch)CONFIG_CPU_E906FD=1 $(PreprocessorSwitch)CONFIG_DEBUG_MODE=1 $(PreprocessorSwitch)CONFIG_KERNEL_NONE=1 $(PreprocessorSwitch)CONFIG_SUPPORT_TSPEND=1 $(PreprocessorSwitch)CONFIG_XIP=1   -mcpu=e906fd   -Os  -g -DLV_CONF_INCLUDE_SIMPLE 
-ASFLAGS  := $(PreprocessorSwitch)USE_CHIP_TD1601 $(PreprocessorSwitch)USE_CONSOLE $(PreprocessorSwitch)USE_CSI $(PreprocessorSwitch)USE_LVGL $(PreprocessorSwitch)USE_MINILIBC $(PreprocessorSwitch)USE_MM $(PreprocessorSwitch)USE_TD1601_EVB    $(PreprocessorSwitch)CONFIG_ARCH_INTERRUPTSTACK=4096 $(PreprocessorSwitch)CONFIG_BENCHMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_COREMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_DHRY=1 $(PreprocessorSwitch)CONFIG_CHIP_TD1601=1 $(PreprocessorSwitch)CONFIG_CPU_E906FD=1 $(PreprocessorSwitch)CONFIG_DEBUG_MODE=1 $(PreprocessorSwitch)CONFIG_KERNEL_NONE=1 $(PreprocessorSwitch)CONFIG_SUPPORT_TSPEND=1 $(PreprocessorSwitch)CONFIG_XIP=1   -mcpu=e906fd    
-PreprocessFlags  := $(PreprocessorSwitch)USE_CHIP_TD1601 $(PreprocessorSwitch)USE_CONSOLE $(PreprocessorSwitch)USE_CSI $(PreprocessorSwitch)USE_LVGL $(PreprocessorSwitch)USE_MINILIBC $(PreprocessorSwitch)USE_MM $(PreprocessorSwitch)USE_TD1601_EVB   -Wno-unused-function -O2 -g -nostdlib -Wpointer-arith -Wall -Wl,-EL -ffunction-sections -fdata-sections -fdata-sections -Os -g  $(PreprocessorSwitch)CONFIG_ARCH_INTERRUPTSTACK=4096 $(PreprocessorSwitch)CONFIG_BENCHMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_COREMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_DHRY=1 $(PreprocessorSwitch)CONFIG_CHIP_TD1601=1 $(PreprocessorSwitch)CONFIG_CPU_E906FD=1 $(PreprocessorSwitch)CONFIG_DEBUG_MODE=1 $(PreprocessorSwitch)CONFIG_KERNEL_NONE=1 $(PreprocessorSwitch)CONFIG_SUPPORT_TSPEND=1 $(PreprocessorSwitch)CONFIG_XIP=1   -mcpu=e906fd   -Os  -g -DLV_CONF_INCLUDE_SIMPLE 
+CXXFLAGS := $(PreprocessorSwitch)USE_CHIP_TD1601 $(PreprocessorSwitch)USE_CONSOLE $(PreprocessorSwitch)USE_CSI $(PreprocessorSwitch)USE_LVGL $(PreprocessorSwitch)USE_MINILIBC $(PreprocessorSwitch)USE_MM $(PreprocessorSwitch)USE_TD1601_EVB   -Os -g  -Os -g $(PreprocessorSwitch)CONFIG_ARCH_INTERRUPTSTACK=16384 $(PreprocessorSwitch)CONFIG_BENCHMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_COREMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_DHRY=1 $(PreprocessorSwitch)CONFIG_CHIP_TD1601=1 $(PreprocessorSwitch)CONFIG_CPU_E906FD=1 $(PreprocessorSwitch)CONFIG_DEBUG_MODE=1 $(PreprocessorSwitch)CONFIG_KERNEL_NONE=1 $(PreprocessorSwitch)CONFIG_SUPPORT_TSPEND=1 $(PreprocessorSwitch)CONFIG_XIP=1   -mcpu=e906fd   -O1  -g -DLV_CONF_INCLUDE_SIMPLE 
+CFLAGS   := $(PreprocessorSwitch)USE_CHIP_TD1601 $(PreprocessorSwitch)USE_CONSOLE $(PreprocessorSwitch)USE_CSI $(PreprocessorSwitch)USE_LVGL $(PreprocessorSwitch)USE_MINILIBC $(PreprocessorSwitch)USE_MM $(PreprocessorSwitch)USE_TD1601_EVB   -Wno-unused-function -O2 -g -nostdlib -Wpointer-arith -Wall -Wl,-EL -ffunction-sections -fdata-sections -fdata-sections -Os -g  $(PreprocessorSwitch)CONFIG_ARCH_INTERRUPTSTACK=16384 $(PreprocessorSwitch)CONFIG_BENCHMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_COREMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_DHRY=1 $(PreprocessorSwitch)CONFIG_CHIP_TD1601=1 $(PreprocessorSwitch)CONFIG_CPU_E906FD=1 $(PreprocessorSwitch)CONFIG_DEBUG_MODE=1 $(PreprocessorSwitch)CONFIG_KERNEL_NONE=1 $(PreprocessorSwitch)CONFIG_SUPPORT_TSPEND=1 $(PreprocessorSwitch)CONFIG_XIP=1   -mcpu=e906fd   -O1  -g -DLV_CONF_INCLUDE_SIMPLE 
+ASFLAGS  := $(PreprocessorSwitch)USE_CHIP_TD1601 $(PreprocessorSwitch)USE_CONSOLE $(PreprocessorSwitch)USE_CSI $(PreprocessorSwitch)USE_LVGL $(PreprocessorSwitch)USE_MINILIBC $(PreprocessorSwitch)USE_MM $(PreprocessorSwitch)USE_TD1601_EVB    $(PreprocessorSwitch)CONFIG_ARCH_INTERRUPTSTACK=16384 $(PreprocessorSwitch)CONFIG_BENCHMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_COREMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_DHRY=1 $(PreprocessorSwitch)CONFIG_CHIP_TD1601=1 $(PreprocessorSwitch)CONFIG_CPU_E906FD=1 $(PreprocessorSwitch)CONFIG_DEBUG_MODE=1 $(PreprocessorSwitch)CONFIG_KERNEL_NONE=1 $(PreprocessorSwitch)CONFIG_SUPPORT_TSPEND=1 $(PreprocessorSwitch)CONFIG_XIP=1   -mcpu=e906fd    
+PreprocessFlags  := $(PreprocessorSwitch)USE_CHIP_TD1601 $(PreprocessorSwitch)USE_CONSOLE $(PreprocessorSwitch)USE_CSI $(PreprocessorSwitch)USE_LVGL $(PreprocessorSwitch)USE_MINILIBC $(PreprocessorSwitch)USE_MM $(PreprocessorSwitch)USE_TD1601_EVB   -Wno-unused-function -O2 -g -nostdlib -Wpointer-arith -Wall -Wl,-EL -ffunction-sections -fdata-sections -fdata-sections -Os -g  $(PreprocessorSwitch)CONFIG_ARCH_INTERRUPTSTACK=16384 $(PreprocessorSwitch)CONFIG_BENCHMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_COREMARK=1 $(PreprocessorSwitch)CONFIG_BENCHMARK_DHRY=1 $(PreprocessorSwitch)CONFIG_CHIP_TD1601=1 $(PreprocessorSwitch)CONFIG_CPU_E906FD=1 $(PreprocessorSwitch)CONFIG_DEBUG_MODE=1 $(PreprocessorSwitch)CONFIG_KERNEL_NONE=1 $(PreprocessorSwitch)CONFIG_SUPPORT_TSPEND=1 $(PreprocessorSwitch)CONFIG_XIP=1   -mcpu=e906fd   -O1  -g -DLV_CONF_INCLUDE_SIMPLE 
 
 
-Objects0=$(IntermediateDirectory)/chip_config$(ObjectSuffix) $(IntermediateDirectory)/src_CST816$(ObjectSuffix) $(IntermediateDirectory)/src_ST77916$(ObjectSuffix) $(IntermediateDirectory)/src_board_init$(ObjectSuffix) $(IntermediateDirectory)/src_gpio_toggle$(ObjectSuffix) $(IntermediateDirectory)/src_lv_port_disp$(ObjectSuffix) $(IntermediateDirectory)/src_lv_port_indev$(ObjectSuffix) $(IntermediateDirectory)/src_main$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/chip_config$(ObjectSuffix) $(IntermediateDirectory)/src_CST816$(ObjectSuffix) $(IntermediateDirectory)/src_ST77916$(ObjectSuffix) $(IntermediateDirectory)/src_board_init$(ObjectSuffix) $(IntermediateDirectory)/src_gpio_toggle$(ObjectSuffix) $(IntermediateDirectory)/src_images$(ObjectSuffix) $(IntermediateDirectory)/src_lv_port_disp$(ObjectSuffix) $(IntermediateDirectory)/src_lv_port_indev$(ObjectSuffix) $(IntermediateDirectory)/src_main$(ObjectSuffix) $(IntermediateDirectory)/src_screens$(ObjectSuffix) \
+	$(IntermediateDirectory)/src_styles$(ObjectSuffix) $(IntermediateDirectory)/src_ui_font_cn_14$(ObjectSuffix) $(IntermediateDirectory)/src_ui_image_popup_button_fan_high_off_background_image$(ObjectSuffix) $(IntermediateDirectory)/src_ui_image_popup_button_fan_level_down_off_background_image$(ObjectSuffix) $(IntermediateDirectory)/src_ui_image_popup_button_kt_off_background_image$(ObjectSuffix) $(IntermediateDirectory)/src_ui_image_popup_button_mode_cold_off_background_image$(ObjectSuffix) $(IntermediateDirectory)/src_ui_image_popup_button_mode_cold_on_background_image$(ObjectSuffix) $(IntermediateDirectory)/src_ui_image_popup_button_mode_flash_off_background_image$(ObjectSuffix) $(IntermediateDirectory)/src_ui_image_popup_button_mode_flash_on_background_image$(ObjectSuffix) $(IntermediateDirectory)/src_ui_image_popup_button_mode_hot_off_background_image$(ObjectSuffix) \
+	$(IntermediateDirectory)/src_ui_image_popup_button_mode_hot_on_background_image$(ObjectSuffix) $(IntermediateDirectory)/src_ui_image_popup_button_mode_hum_off_background_image$(ObjectSuffix) $(IntermediateDirectory)/src_ui_image_popup_button_mode_hum_on_background_image$(ObjectSuffix) $(IntermediateDirectory)/src_ui_image_popup_button_mode_set_back_background_image$(ObjectSuffix) 
 
 
 
@@ -126,6 +128,11 @@ $(IntermediateDirectory)/src_gpio_toggle$(ObjectSuffix): src/gpio_toggle.c
 Lst/src_gpio_toggle$(PreprocessSuffix): src/gpio_toggle.c
 	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_gpio_toggle$(PreprocessSuffix) src/gpio_toggle.c
 
+$(IntermediateDirectory)/src_images$(ObjectSuffix): src/images.c  
+	$(CC) $(SourceSwitch) src/images.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_images$(ObjectSuffix) -MF$(IntermediateDirectory)/src_images$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_images$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_images$(PreprocessSuffix): src/images.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_images$(PreprocessSuffix) src/images.c
+
 $(IntermediateDirectory)/src_lv_port_disp$(ObjectSuffix): src/lv_port_disp.c  
 	$(CC) $(SourceSwitch) src/lv_port_disp.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_lv_port_disp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_lv_port_disp$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_lv_port_disp$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
 Lst/src_lv_port_disp$(PreprocessSuffix): src/lv_port_disp.c
@@ -140,6 +147,81 @@ $(IntermediateDirectory)/src_main$(ObjectSuffix): src/main.c
 	$(CC) $(SourceSwitch) src/main.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_main$(ObjectSuffix) -MF$(IntermediateDirectory)/src_main$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_main$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
 Lst/src_main$(PreprocessSuffix): src/main.c
 	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_main$(PreprocessSuffix) src/main.c
+
+$(IntermediateDirectory)/src_screens$(ObjectSuffix): src/screens.c  
+	$(CC) $(SourceSwitch) src/screens.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_screens$(ObjectSuffix) -MF$(IntermediateDirectory)/src_screens$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_screens$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_screens$(PreprocessSuffix): src/screens.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_screens$(PreprocessSuffix) src/screens.c
+
+$(IntermediateDirectory)/src_styles$(ObjectSuffix): src/styles.c  
+	$(CC) $(SourceSwitch) src/styles.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_styles$(ObjectSuffix) -MF$(IntermediateDirectory)/src_styles$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_styles$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_styles$(PreprocessSuffix): src/styles.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_styles$(PreprocessSuffix) src/styles.c
+
+$(IntermediateDirectory)/src_ui_font_cn_14$(ObjectSuffix): src/ui_font_cn_14.c  
+	$(CC) $(SourceSwitch) src/ui_font_cn_14.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_ui_font_cn_14$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ui_font_cn_14$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_ui_font_cn_14$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_ui_font_cn_14$(PreprocessSuffix): src/ui_font_cn_14.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_ui_font_cn_14$(PreprocessSuffix) src/ui_font_cn_14.c
+
+$(IntermediateDirectory)/src_ui_image_popup_button_fan_high_off_background_image$(ObjectSuffix): src/ui_image_popup_button_fan_high_off_background_image.c  
+	$(CC) $(SourceSwitch) src/ui_image_popup_button_fan_high_off_background_image.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_ui_image_popup_button_fan_high_off_background_image$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ui_image_popup_button_fan_high_off_background_image$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_ui_image_popup_button_fan_high_off_background_image$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_ui_image_popup_button_fan_high_off_background_image$(PreprocessSuffix): src/ui_image_popup_button_fan_high_off_background_image.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_ui_image_popup_button_fan_high_off_background_image$(PreprocessSuffix) src/ui_image_popup_button_fan_high_off_background_image.c
+
+$(IntermediateDirectory)/src_ui_image_popup_button_fan_level_down_off_background_image$(ObjectSuffix): src/ui_image_popup_button_fan_level_down_off_background_image.c  
+	$(CC) $(SourceSwitch) src/ui_image_popup_button_fan_level_down_off_background_image.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_ui_image_popup_button_fan_level_down_off_background_image$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ui_image_popup_button_fan_level_down_off_background_image$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_ui_image_popup_button_fan_level_down_off_background_image$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_ui_image_popup_button_fan_level_down_off_background_image$(PreprocessSuffix): src/ui_image_popup_button_fan_level_down_off_background_image.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_ui_image_popup_button_fan_level_down_off_background_image$(PreprocessSuffix) src/ui_image_popup_button_fan_level_down_off_background_image.c
+
+$(IntermediateDirectory)/src_ui_image_popup_button_kt_off_background_image$(ObjectSuffix): src/ui_image_popup_button_kt_off_background_image.c  
+	$(CC) $(SourceSwitch) src/ui_image_popup_button_kt_off_background_image.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_ui_image_popup_button_kt_off_background_image$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ui_image_popup_button_kt_off_background_image$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_ui_image_popup_button_kt_off_background_image$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_ui_image_popup_button_kt_off_background_image$(PreprocessSuffix): src/ui_image_popup_button_kt_off_background_image.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_ui_image_popup_button_kt_off_background_image$(PreprocessSuffix) src/ui_image_popup_button_kt_off_background_image.c
+
+$(IntermediateDirectory)/src_ui_image_popup_button_mode_cold_off_background_image$(ObjectSuffix): src/ui_image_popup_button_mode_cold_off_background_image.c  
+	$(CC) $(SourceSwitch) src/ui_image_popup_button_mode_cold_off_background_image.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_ui_image_popup_button_mode_cold_off_background_image$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ui_image_popup_button_mode_cold_off_background_image$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_ui_image_popup_button_mode_cold_off_background_image$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_ui_image_popup_button_mode_cold_off_background_image$(PreprocessSuffix): src/ui_image_popup_button_mode_cold_off_background_image.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_ui_image_popup_button_mode_cold_off_background_image$(PreprocessSuffix) src/ui_image_popup_button_mode_cold_off_background_image.c
+
+$(IntermediateDirectory)/src_ui_image_popup_button_mode_cold_on_background_image$(ObjectSuffix): src/ui_image_popup_button_mode_cold_on_background_image.c  
+	$(CC) $(SourceSwitch) src/ui_image_popup_button_mode_cold_on_background_image.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_ui_image_popup_button_mode_cold_on_background_image$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ui_image_popup_button_mode_cold_on_background_image$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_ui_image_popup_button_mode_cold_on_background_image$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_ui_image_popup_button_mode_cold_on_background_image$(PreprocessSuffix): src/ui_image_popup_button_mode_cold_on_background_image.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_ui_image_popup_button_mode_cold_on_background_image$(PreprocessSuffix) src/ui_image_popup_button_mode_cold_on_background_image.c
+
+$(IntermediateDirectory)/src_ui_image_popup_button_mode_flash_off_background_image$(ObjectSuffix): src/ui_image_popup_button_mode_flash_off_background_image.c  
+	$(CC) $(SourceSwitch) src/ui_image_popup_button_mode_flash_off_background_image.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_ui_image_popup_button_mode_flash_off_background_image$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ui_image_popup_button_mode_flash_off_background_image$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_ui_image_popup_button_mode_flash_off_background_image$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_ui_image_popup_button_mode_flash_off_background_image$(PreprocessSuffix): src/ui_image_popup_button_mode_flash_off_background_image.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_ui_image_popup_button_mode_flash_off_background_image$(PreprocessSuffix) src/ui_image_popup_button_mode_flash_off_background_image.c
+
+$(IntermediateDirectory)/src_ui_image_popup_button_mode_flash_on_background_image$(ObjectSuffix): src/ui_image_popup_button_mode_flash_on_background_image.c  
+	$(CC) $(SourceSwitch) src/ui_image_popup_button_mode_flash_on_background_image.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_ui_image_popup_button_mode_flash_on_background_image$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ui_image_popup_button_mode_flash_on_background_image$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_ui_image_popup_button_mode_flash_on_background_image$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_ui_image_popup_button_mode_flash_on_background_image$(PreprocessSuffix): src/ui_image_popup_button_mode_flash_on_background_image.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_ui_image_popup_button_mode_flash_on_background_image$(PreprocessSuffix) src/ui_image_popup_button_mode_flash_on_background_image.c
+
+$(IntermediateDirectory)/src_ui_image_popup_button_mode_hot_off_background_image$(ObjectSuffix): src/ui_image_popup_button_mode_hot_off_background_image.c  
+	$(CC) $(SourceSwitch) src/ui_image_popup_button_mode_hot_off_background_image.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_ui_image_popup_button_mode_hot_off_background_image$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ui_image_popup_button_mode_hot_off_background_image$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_ui_image_popup_button_mode_hot_off_background_image$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_ui_image_popup_button_mode_hot_off_background_image$(PreprocessSuffix): src/ui_image_popup_button_mode_hot_off_background_image.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_ui_image_popup_button_mode_hot_off_background_image$(PreprocessSuffix) src/ui_image_popup_button_mode_hot_off_background_image.c
+
+$(IntermediateDirectory)/src_ui_image_popup_button_mode_hot_on_background_image$(ObjectSuffix): src/ui_image_popup_button_mode_hot_on_background_image.c  
+	$(CC) $(SourceSwitch) src/ui_image_popup_button_mode_hot_on_background_image.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_ui_image_popup_button_mode_hot_on_background_image$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ui_image_popup_button_mode_hot_on_background_image$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_ui_image_popup_button_mode_hot_on_background_image$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_ui_image_popup_button_mode_hot_on_background_image$(PreprocessSuffix): src/ui_image_popup_button_mode_hot_on_background_image.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_ui_image_popup_button_mode_hot_on_background_image$(PreprocessSuffix) src/ui_image_popup_button_mode_hot_on_background_image.c
+
+$(IntermediateDirectory)/src_ui_image_popup_button_mode_hum_off_background_image$(ObjectSuffix): src/ui_image_popup_button_mode_hum_off_background_image.c  
+	$(CC) $(SourceSwitch) src/ui_image_popup_button_mode_hum_off_background_image.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_ui_image_popup_button_mode_hum_off_background_image$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ui_image_popup_button_mode_hum_off_background_image$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_ui_image_popup_button_mode_hum_off_background_image$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_ui_image_popup_button_mode_hum_off_background_image$(PreprocessSuffix): src/ui_image_popup_button_mode_hum_off_background_image.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_ui_image_popup_button_mode_hum_off_background_image$(PreprocessSuffix) src/ui_image_popup_button_mode_hum_off_background_image.c
+
+$(IntermediateDirectory)/src_ui_image_popup_button_mode_hum_on_background_image$(ObjectSuffix): src/ui_image_popup_button_mode_hum_on_background_image.c  
+	$(CC) $(SourceSwitch) src/ui_image_popup_button_mode_hum_on_background_image.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_ui_image_popup_button_mode_hum_on_background_image$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ui_image_popup_button_mode_hum_on_background_image$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_ui_image_popup_button_mode_hum_on_background_image$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_ui_image_popup_button_mode_hum_on_background_image$(PreprocessSuffix): src/ui_image_popup_button_mode_hum_on_background_image.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_ui_image_popup_button_mode_hum_on_background_image$(PreprocessSuffix) src/ui_image_popup_button_mode_hum_on_background_image.c
+
+$(IntermediateDirectory)/src_ui_image_popup_button_mode_set_back_background_image$(ObjectSuffix): src/ui_image_popup_button_mode_set_back_background_image.c  
+	$(CC) $(SourceSwitch) src/ui_image_popup_button_mode_set_back_background_image.c $(CFLAGS) -MMD -MP -MT$(IntermediateDirectory)/src_ui_image_popup_button_mode_set_back_background_image$(ObjectSuffix) -MF$(IntermediateDirectory)/src_ui_image_popup_button_mode_set_back_background_image$(DependSuffix) $(ObjectSwitch)$(IntermediateDirectory)/src_ui_image_popup_button_mode_set_back_background_image$(ObjectSuffix) $(IncludeCPath) $(IncludePackagePath)
+Lst/src_ui_image_popup_button_mode_set_back_background_image$(PreprocessSuffix): src/ui_image_popup_button_mode_set_back_background_image.c
+	$(CC) $(CFLAGS)$(IncludeCPath) $(PreprocessOnlySwitch) $(OutputSwitch) Lst/src_ui_image_popup_button_mode_set_back_background_image$(PreprocessSuffix) src/ui_image_popup_button_mode_set_back_background_image.c
 
 
 -include $(IntermediateDirectory)/*$(DependSuffix)

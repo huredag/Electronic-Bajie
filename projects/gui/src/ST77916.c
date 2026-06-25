@@ -324,7 +324,7 @@ static int lcd_write_color(const uint8_t *data, uint32_t len)
 
     csi_ospi_config(&s_ospi, &s_cmd);
 
-
+  
     csi_ospi_baud(&s_ospi, 3 * 1000000);
 
     LCD_CS_LOW();

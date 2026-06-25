@@ -143,12 +143,16 @@
 /* ===========================================================================
  * 调试/监控工具
  * =========================================================================*/
-#define LV_USE_PERF_MONITOR 0           /* 性能监视器：0=关闭（避免频繁分配内存导致碎片化崩溃） */
+#define LV_USE_PERF_MONITOR 1           /* 性能监视器：1=显示 FPS 和 CPU 占用 */
 #if LV_USE_PERF_MONITOR
     #define LV_USE_PERF_MONITOR_POS LV_ALIGN_BOTTOM_MID /* 显示位置：屏幕底部居中 */
 #endif
 
-#define LV_USE_MEM_MONITOR 0            /* 内存监视器：0=关闭 */
+#define LV_USE_MEM_MONITOR 0            /* 内存监视器：1=显示内存使用情况 */
+#if LV_USE_MEM_MONITOR
+    #define LV_USE_MEM_MONITOR_POS LV_ALIGN_BOTTOM_LEFT /* 显示位置：屏幕左下角 */
+#endif
+
 #define LV_USE_REFR_DEBUG 0             /* 刷新区域高亮：0=关闭 */
 
 /* ===========================================================================
@@ -195,7 +199,7 @@
 #define LV_FONT_MONTSERRAT_12 0
 #define LV_FONT_MONTSERRAT_14 1         /* 启用：14px，用作默认字体 */
 #define LV_FONT_MONTSERRAT_16 1         /* 启用：16px，稍大号 */
-#define LV_FONT_MONTSERRAT_18 0
+#define LV_FONT_MONTSERRAT_18 1         /* 启用：18px，EEZ UI 温度显示 */
 #define LV_FONT_MONTSERRAT_20 0
 #define LV_FONT_MONTSERRAT_22 0
 #define LV_FONT_MONTSERRAT_24 0
@@ -275,7 +279,7 @@
 #define LV_USE_CALENDAR   0             /* 日历 */
 #define LV_USE_CHART      0             /* 图表（折线/柱状等） */
 #define LV_USE_COLORWHEEL 0             /* 色轮选择器 */
-#define LV_USE_IMGBTN     0             /* 图片按钮 */
+#define LV_USE_IMGBTN     1             /* 图片按钮（EEZ UI 需要） */
 #define LV_USE_KEYBOARD   0             /* 虚拟键盘 */
 #define LV_USE_LED        0             /* LED 指示灯 */
 #define LV_USE_LIST       1             /* 列表（菜单常用） */
