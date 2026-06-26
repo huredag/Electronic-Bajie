@@ -1,0 +1,56 @@
+name: lvgl
+version: V8.3.11
+description: LVGL graphics library v8.3.11
+type: common
+license: MIT
+
+build_config:
+  include:
+    - .
+    - src
+  cflag: -Os -DLV_CONF_INCLUDE_SIMPLE -Wno-unused-function
+
+source_file:
+  - src/core/*.c
+  - src/draw/*.c
+  - src/draw/sw/*.c
+  - src/font/*.c
+  - src/hal/*.c
+  - src/misc/*.c
+  - src/widgets/*.c
+  - src/extra/*.c
+  - src/extra/layouts/flex/*.c
+  - src/extra/layouts/grid/*.c
+  - src/extra/themes/default/*.c
+  - src/extra/themes/basic/*.c
+  - src/extra/themes/mono/*.c
+  - src/extra/widgets/animimg/*.c
+  - src/extra/widgets/calendar/*.c
+  - src/extra/widgets/chart/*.c
+  - src/extra/widgets/colorwheel/*.c
+  - src/extra/widgets/imgbtn/*.c
+  - src/extra/widgets/keyboard/*.c
+  - src/extra/widgets/led/*.c
+  - src/extra/widgets/list/*.c
+  - src/extra/widgets/menu/*.c
+  - src/extra/widgets/meter/*.c
+  - src/extra/widgets/msgbox/*.c
+  - src/extra/widgets/span/*.c
+  - src/extra/widgets/spinbox/*.c
+  - src/extra/widgets/spinner/*.c
+  - src/extra/widgets/tabview/*.c
+  - src/extra/widgets/tileview/*.c
+  - src/extra/widgets/win/*.c
+  - src/extra/others/snapshot/*.c
+  - src/extra/others/monkey/*.c
+  - src/extra/others/gridnav/*.c
+  - src/extra/others/fragment/*.c
+  - src/extra/others/ime/*.c
+  - src/extra/others/imgfont/*.c
+  - src/extra/others/msg/*.c
+  - src/extra/libs/fsdrv/*.c
+  - src/extra/libs/qrcode/*.c
+  - src/extra/libs/bmp/*.c
+  - src/extra/libs/png/*.c
+  - src/extra/libs/gif/*.c
+  - src/extra/libs/sjpg/*.c
