@@ -1,0 +1,3 @@
+# IDE 和构建缓存
+gui/.cache/
+gui/.cdk/

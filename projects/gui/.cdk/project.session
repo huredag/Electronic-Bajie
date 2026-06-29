@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Session Name="D:\sort\C-Sky\CDK\CSKY\PACK\td1601-lierda\projects\gui\project.cdkws">
-  <int Value="0" Name="m_selectedTab"/>
-  <wxString Value="D:\sort\C-Sky\CDK\CSKY\PACK\td1601-lierda\projects\gui\project.cdkws" Name="m_workspaceName"/>
-  <TabInfoArray Name="TabInfoArray"/>
-  <SerializedObject Name="m_breakpoints">
-    <long Value="0" Name="Count"/>
-  </SerializedObject>
-</Session>

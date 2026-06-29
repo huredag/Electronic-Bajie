@@ -47,8 +47,8 @@ build_config:
     - include/sys
     - ../../components/lvgl/
   internal_include: 
-  cflag: -O1  -g -DLV_CONF_INCLUDE_SIMPLE
-  cxxflag: -O1  -g -DLV_CONF_INCLUDE_SIMPLE
+  cflag: -O0  -g -DLV_CONF_INCLUDE_SIMPLE
+  cxxflag: -O0  -g -DLV_CONF_INCLUDE_SIMPLE
   asmflag: ""
   define: 
   libs:

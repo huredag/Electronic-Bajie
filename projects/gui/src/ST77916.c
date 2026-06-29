@@ -22,11 +22,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include "ST77916.h"
-#include <drv/spi.h>
-#include <drv/ospi.h>
-/* OSPI 句柄与命令描述符（DW_OSPI0 控制器） */
+#include "dw_ospi_ll.h"   /* dw_ospi_regs_t, dw_ospi_disable/enable */
+
+/* 直接寄存器访问，对齐参考工程写法 */
+#define DWOSPI  ((dw_ospi_regs_t *)DW_OSPI0_BASE)
+
+/* OSPI 句柄（DW_OSPI0 控制器） */
 static csi_ospi_t s_ospi;
-static csi_ospi_command_t s_cmd;
 
 /* 控制 IO 用的 GPIO 端口句柄（CS=PA15 / RST=PA7 / 背光=PA4，同属端口 A） */
 static csi_gpio_t s_lcd_gpio;
@@ -40,7 +42,6 @@ uint8_t LCD_Backlight = 70;
 /* 软件片选：拉低 = 选中，拉高 = 释放 */
 #define LCD_CS_LOW()   csi_gpio_write(&s_lcd_gpio, LCD_CS_PIN, GPIO_PIN_LOW)
 #define LCD_CS_HIGH()  csi_gpio_write(&s_lcd_gpio, LCD_CS_PIN, GPIO_PIN_HIGH)
-
 
 /* ===========================================================================
  * ST77916 厂商初始化命令表
@@ -230,7 +231,7 @@ static const st77916_init_cmd_t vendor_specific_init_new[] = {
     {0xF3, {0x01}, 1, 0},
     {0xF0, {0x00}, 1, 0},
     {0x21, {0x00}, 1, 0},
-    {0x3A, {0x55}, 1, 0},   /* COLMOD = RGB565 */
+    {0x3A, {0x55}, 1, 0},     /* COLMOD：RGB565，每像素 2 字节 */
     {0x11, {0x00}, 1, 120},   /* SLEEP OUT，需等 120ms */
     {0x29, {0x00}, 1, 0},     /* DISPLAY ON */
 };
@@ -240,103 +241,127 @@ static const st77916_init_cmd_t vendor_specific_init_new[] = {
  * =========================================================================*/
 
 /*
- * 写命令 + 可选参数（命令相位）。
- *
- * 重要：本 SDK 的 csi_ospi_send 有一个特性——只有当 data.bus_width != SINGLE
- * （即 DUAL/QUAD/OCTAL）时，才会把 instruction.value / address.value 压进 FIFO；
- * 数据相位为单线时，instruction/address 不会被发出。
- *
- * ST77916 QSPI 写命令格式：0x02(单线) + 24bit 地址(高8bit=命令字, 单线) + 参数(单线)。
- * 由于上述特性，单线下没法用 instruction/address 相位，因此这里把整条命令帧
- *   [0x02, 0x00, cmd, 0x00, 参数...]
- * 拼成一段连续字节，全部走单线 data 相位手动发出（指令/地址相位 disabled）。
- *   - 字节0：0x02 写命令操作码
- *   - 字节1~3：24bit 地址，高8bit=0x00，中8bit=命令字 cmd，低8bit=0x00
- *     （等效于 esp_lcd_st77916 的 cmd<<8 over 24-bit address）
- *   - 之后跟随参数字节
+ * 写命令 + 可选参数（单线 10MHz，直接操作寄存器）。
+ * 对齐参考工程 TFT_SPI_Write_Byte：每帧 disable→baud→enable，直写 DR。
+ * 完全不使用 csi_ospi_send，与 lcd_write_color 路径统一，避免状态机混用。
  */
 static int lcd_write_cmd(uint8_t cmd, const uint8_t *data, uint32_t len)
 {
-    static uint8_t frame[4 + 16];   /* 4 字节帧头 + 最多 16 字节参数 */
-    uint32_t total;
-    int32_t ret;
+    /* 等总线空闲，确保上次传输已完成 */
+    while (!(DWOSPI->SR & DW_OSPI_SR_TFE));
+    while (DWOSPI->SR  & DW_OSPI_SR_BUSY);
 
-    /* 拼命令帧：opcode + 24bit 地址(高8=0, 中8=cmd, 低8=0) */
-    frame[0] = LCD_OPCODE_WRITE_CMD;   /* 0x02 */
-    frame[1] = 0x00;                   /* 地址 [23:16] */
-    frame[2] = cmd;                    /* 地址 [15:8] = 命令字 */
-    frame[3] = 0x00;                   /* 地址 [7:0] */
-    for (uint32_t i = 0; i < len && i < 16; i++) {
-        frame[4 + i] = data[i];
-    }
-    total = 4 + ((len < 16) ? len : 16);
-
-    /* 整帧单线发送，指令/地址相位关闭，全部走 data 相位 */
-    memset(&s_cmd, 0, sizeof(s_cmd));
-    s_cmd.instruction.disabled  = true;
-    s_cmd.address.disabled      = true;
-    s_cmd.alt.disabled          = true;
-    s_cmd.dummy_count           = 0;
-    s_cmd.data.bus_width        = OSPI_LINE_SINGLE;
-    s_cmd.data.frame_len        = 8;
-    s_cmd.data.transfer_mode    = OSPI_TRANSFER_SEND_ONLY;
-    s_cmd.data.disabled         = false;
-
-    csi_ospi_config(&s_ospi, &s_cmd);
+    /* 切到 10MHz 单线 8-bit（命令用低速，保证时序稳定） */
+    dw_ospi_disable(DWOSPI);
+    csi_ospi_baud(&s_ospi, LCD_OSPI_BAUD_HZ);   /* 10MHz */
+    /* 确保 CTRLR0: SPI_FRF=单线，DFS=8bit，SPI_CTRL0=0 */
+    DWOSPI->CTRLR0 = (DWOSPI->CTRLR0 & ~DW_OSPI_CTRLR0_SPI_FRF_Msk);
+    DWOSPI->CTRLR0 = (DWOSPI->CTRLR0 & ~DW_OSPI_CTRLR0_DFS_Msk)
+                   | (0x7U << DW_OSPI_CTRLR0_DFS_Pos);
+    DWOSPI->SPI_CTRL0 = 0U;
+    dw_ospi_enable(DWOSPI);
 
     LCD_CS_LOW();
-    ret = csi_ospi_send(&s_ospi, frame, total, LCD_OSPI_TIMEOUT);
-    LCD_CS_HIGH();
 
-    if ((uint32_t)ret != total) {
-        return -1;
+    /* 帧头：0x02 + 0x00 + cmd + 0x00 */
+    DWOSPI->DR = LCD_OPCODE_WRITE_CMD;   /* 0x02 */
+    while (!(DWOSPI->SR & DW_OSPI_SR_TFNF));
+    DWOSPI->DR = 0x00U;
+    while (!(DWOSPI->SR & DW_OSPI_SR_TFNF));
+    DWOSPI->DR = (uint32_t)cmd;
+    while (!(DWOSPI->SR & DW_OSPI_SR_TFNF));
+    DWOSPI->DR = 0x00U;
+
+    /* 参数字节 */
+    for (uint32_t i = 0; i < len && i < 16; i++) {
+        while (!(DWOSPI->SR & DW_OSPI_SR_TFNF));
+        DWOSPI->DR = data[i];
     }
+
+    /* 等发送完成 */
+    while (!(DWOSPI->SR & DW_OSPI_SR_TFE));
+    while (DWOSPI->SR  & DW_OSPI_SR_BUSY);
+
+    LCD_CS_HIGH();
     return 0;
 }
 
 /*
- * 写显存色数据。
- * ST77916 QSPI 写色数据格式：0x32(单线) opcode + 24bit 地址(高8bit=0x2C 写显存, 单线)
- * + 像素数据(四线 QUAD)。
+ * 写显存色数据，完全对齐参考工程 LCD_startWriteMutileData / LCD_WritemutileData16_fast
+ * / LCD_endWriteMutileData 的时序：
  *
- * 利用 SDK 特性：data.bus_width = QUAD 时，csi_ospi_send 会自动先发
- * instruction.value(0x32) 与 address.value(0x2C<<8)，再用四线发数据。
+ *  step1: 等空闲 → disable → 50MHz 单线 → enable → CS低
+ *         → 直写 DR 发 4 字节帧头 → 等空闲
+ *  step2: disable → QUAD + 16bit + SPI_CTRL0=0x302 → enable
+ *         → 直写 DR 逐像素发送（uint16_t，等 TFNF 非满即写）
+ *  step3: 等空闲 → CS高 → disable → 单线 8bit + SPI_CTRL0=0 → enable
+ *
+ * 关键：帧头和像素数据必须在同一 CS 低电平期间连续发送，中间只能 disable/enable
+ * 控制器（不拉高 CS），否则屏幕会把后续像素当成新命令，出现残留彩色条纹。
  */
 static int lcd_write_color(const uint8_t *data, uint32_t len)
 {
-    int32_t ret;
+    /* ---- step1: 低速单线发帧头 ---- */
+    while (!(DWOSPI->SR & DW_OSPI_SR_TFE));
+    while (DWOSPI->SR  & DW_OSPI_SR_BUSY);
 
-    memset(&s_cmd, 0, sizeof(s_cmd));
-    s_cmd.instruction.bus_width = OSPI_LINE_SINGLE;
-    s_cmd.instruction.size      = OSPI_INSTRUCTION_8_BITS;
-    s_cmd.instruction.value     = LCD_OPCODE_WRITE_COLOR;  /* 0x32 */
-    s_cmd.instruction.disabled  = false;
-    s_cmd.address.bus_width     = OSPI_LINE_SINGLE;
-    s_cmd.address.size          = OSPI_ADDRESS_24_BITS;
-    s_cmd.address.value         = ((uint32_t)0x2C) << 8;   /* 0x2C: RAMWR 写显存 */
-    s_cmd.address.disabled      = false;
-    s_cmd.alt.disabled          = true;
-    s_cmd.dummy_count           = 0;
-    s_cmd.data.bus_width        = OSPI_LINE_QUAD;          /* 色数据走四线 */
-    s_cmd.data.frame_len        = 16;
-    s_cmd.data.transfer_mode    = OSPI_TRANSFER_SEND_ONLY;
-    s_cmd.data.disabled         = false;
-
-    csi_ospi_config(&s_ospi, &s_cmd);
-
-  
-    csi_ospi_baud(&s_ospi, 3 * 1000000);
+    dw_ospi_disable(DWOSPI);
+    csi_ospi_baud(&s_ospi, LCD_OSPI_CMD_BAUD_HZ);
+    dw_ospi_enable(DWOSPI);
 
     LCD_CS_LOW();
-    ret = csi_ospi_send(&s_ospi, data, len, LCD_OSPI_TIMEOUT);
+    DWOSPI->DR = LCD_OPCODE_WRITE_COLOR;    /* 0x32 */
+    DWOSPI->DR = 0x00U;
+    DWOSPI->DR = 0x2CU;                     /* RAMWR */
+    DWOSPI->DR = 0x00U;
+    while (!(DWOSPI->SR & DW_OSPI_SR_TFE));
+    while (DWOSPI->SR  & DW_OSPI_SR_BUSY);
+
+    /* ---- step2: 切 QUAD 16-bit，CS 保持拉低，直写像素 ---- */
+    /* DW OSPI 16-bit QUAD 模式下，DR 写入 uint16_t 时，
+     * 硬件按 [15:12][11:8][7:4][3:0] 顺序发 4 个 nibble。
+     * 但实际行为等效于：先发低字节的 2 个 nibble，再发高字节的 2 个 nibble
+     * （小端 DR 存储顺序导致），所以需要 bswap16 修正字节序。
+     * 例：0xF800(红) → bswap → 0x00F8 → 发出 [0,0,F,8] → 屏幕重组 0x00F8
+     * 但 0x00F8 不是红色……
+     * 实际上正确做法：写入值本身不变，但 DW OSPI 16-bit QUAD 发送顺序
+     * 是 nibble [15:12] 先，屏幕接收 4 个 nibble 后重组 16-bit，
+     * 第一个 nibble 对应 bit[15:12]，这是正确的 MSB-first 顺序。
+     * 之前彩条正确说明 16-bit 模式字节序本身没问题，
+     * 渐变出错是因为某些特定值在 FIFO 里触发了 DW OSPI 的 8-bit split 行为。
+     * 解决方案：强制 TMOD=TX only，确保不触发 RX split */
+    dw_ospi_disable(DWOSPI);
+    csi_ospi_baud(&s_ospi, LCD_OSPI_DATA_BAUD_HZ);
+    DWOSPI->CTRLR0 = (DWOSPI->CTRLR0 & ~DW_OSPI_CTRLR0_SPI_FRF_Msk)
+                   | DW_OSPI_CTRLR0_SPI_FRF_QUAD;
+    DWOSPI->CTRLR0 = (DWOSPI->CTRLR0 & ~DW_OSPI_CTRLR0_DFS_Msk)
+                   | (0xFU << DW_OSPI_CTRLR0_DFS_Pos);   /* DFS=15 → 16-bit 帧 */
+    /* TMOD=TX only，防止接收路径干扰发送 */
+    DWOSPI->CTRLR0 = (DWOSPI->CTRLR0 & ~DW_OSPI_CTRLR0_TMOD_Msk)
+                   | DW_OSPI_CTRLR0_TMOD_TX;
+    DWOSPI->SPI_CTRL0 = 0x302U;
+    dw_ospi_enable(DWOSPI);
+
+    const uint16_t *pixels = (const uint16_t *)data;
+    uint32_t count = len / 2U;
+    for (uint32_t i = 0; i < count; i++) {
+        while (!(DWOSPI->SR & DW_OSPI_SR_TFNF));
+        DWOSPI->DR = pixels[i];
+    }
+
+    /* ---- step3: 等空闲，CS高，恢复单线 8bit ---- */
+    while (!(DWOSPI->SR & DW_OSPI_SR_TFE));
+    while (DWOSPI->SR  & DW_OSPI_SR_BUSY);
     LCD_CS_HIGH();
 
-    /* 恢复原波特率 */
+    dw_ospi_disable(DWOSPI);
     csi_ospi_baud(&s_ospi, LCD_OSPI_BAUD_HZ);
+    DWOSPI->CTRLR0 = (DWOSPI->CTRLR0 & ~DW_OSPI_CTRLR0_SPI_FRF_Msk);
+    DWOSPI->CTRLR0 = (DWOSPI->CTRLR0 & ~DW_OSPI_CTRLR0_DFS_Msk)
+                   | (0x7U << DW_OSPI_CTRLR0_DFS_Pos);
+    DWOSPI->SPI_CTRL0 = 0U;
+    dw_ospi_enable(DWOSPI);
 
-    if ((uint32_t)ret != len) {
-        return -1;
-    }
     return 0;
 }
 
@@ -344,8 +369,7 @@ static int lcd_write_color(const uint8_t *data, uint32_t len)
  * 复位 / 初始化
  * =========================================================================*/
 
-/* OSPI 数据/时钟引脚复用：D0-D3 = PB4-PB7，SCK = PA28
- *   数据线必须加上拉，否则四线读写时序异常导致屏不亮（参考 ospi 例子）。 */
+/* OSPI 数据/时钟引脚复用：D0-D3 = PB4-PB7，SCK = PA28 */
 static void lcd_ospi_pin_init(void)
 {
     csi_pin_set_mux(LCD_OSPI_D0_PORT,  LCD_OSPI_D0_PIN,  LCD_OSPI_D0_FUNC);
@@ -354,11 +378,18 @@ static void lcd_ospi_pin_init(void)
     csi_pin_set_mux(LCD_OSPI_D3_PORT,  LCD_OSPI_D3_PIN,  LCD_OSPI_D3_FUNC);
     csi_pin_set_mux(LCD_OSPI_SCK_PORT, LCD_OSPI_SCK_PIN, LCD_OSPI_SCK_FUNC);
 
-    /* 四条数据线加上拉 */
-    csi_pin_mode(LCD_OSPI_D0_PORT, LCD_OSPI_D0_PIN, GPIO_MODE_PULLUP);
-    csi_pin_mode(LCD_OSPI_D1_PORT, LCD_OSPI_D1_PIN, GPIO_MODE_PULLUP);
-    csi_pin_mode(LCD_OSPI_D2_PORT, LCD_OSPI_D2_PIN, GPIO_MODE_PULLUP);
-    csi_pin_mode(LCD_OSPI_D3_PORT, LCD_OSPI_D3_PIN, GPIO_MODE_PULLUP);
+    /* 高速推挽输出不使用内部上拉，避免改变边沿和线间一致性。 */
+    csi_pin_mode(LCD_OSPI_D0_PORT,  LCD_OSPI_D0_PIN,  GPIO_MODE_PULLNONE);
+    csi_pin_mode(LCD_OSPI_D1_PORT,  LCD_OSPI_D1_PIN,  GPIO_MODE_PULLNONE);
+    csi_pin_mode(LCD_OSPI_D2_PORT,  LCD_OSPI_D2_PIN,  GPIO_MODE_PULLNONE);
+    csi_pin_mode(LCD_OSPI_D3_PORT,  LCD_OSPI_D3_PIN,  GPIO_MODE_PULLNONE);
+    csi_pin_mode(LCD_OSPI_SCK_PORT, LCD_OSPI_SCK_PIN, GPIO_MODE_PULLNONE);
+
+    csi_pin_drive(LCD_OSPI_D0_PORT,  LCD_OSPI_D0_PIN,  PIN_DRIVE_LV3);
+    csi_pin_drive(LCD_OSPI_D1_PORT,  LCD_OSPI_D1_PIN,  PIN_DRIVE_LV3);
+    csi_pin_drive(LCD_OSPI_D2_PORT,  LCD_OSPI_D2_PIN,  PIN_DRIVE_LV3);
+    csi_pin_drive(LCD_OSPI_D3_PORT,  LCD_OSPI_D3_PIN,  PIN_DRIVE_LV3);
+    csi_pin_drive(LCD_OSPI_SCK_PORT, LCD_OSPI_SCK_PIN, PIN_DRIVE_LV3);
 }
 
 /* GPIO 控制脚初始化：CS=PA15、RST=PA7、背光=PA4，均为推挽输出 */
@@ -403,16 +434,19 @@ static int OSPI_Init(void)
         printf("ST77916: csi_ospi_init failed (%d)\r\n", ret);
         return 0;
     }
-
     csi_ospi_mode(&s_ospi, OSPI_MASTER);
-
-    csi_ospi_cp_format(&s_ospi, OSPI_FORMAT_CPOL0_CPHA0);
-
     csi_ospi_baud(&s_ospi, LCD_OSPI_BAUD_HZ);
-    
+    csi_ospi_cp_format(&s_ospi, OSPI_FORMAT_CPOL0_CPHA0);
     csi_ospi_select_slave(&s_ospi, 0);
 
-
+    /* 确保初始状态：TX only + 单线 8-bit */
+    dw_ospi_disable(DWOSPI);
+    dw_ospi_set_tx_mode(DWOSPI);
+    DWOSPI->CTRLR0 = (DWOSPI->CTRLR0 & ~DW_OSPI_CTRLR0_SPI_FRF_Msk);
+    DWOSPI->CTRLR0 = (DWOSPI->CTRLR0 & ~DW_OSPI_CTRLR0_DFS_Msk)
+                   | (0x7U << DW_OSPI_CTRLR0_DFS_Pos);
+    DWOSPI->SPI_CTRL0 = 0U;
+    dw_ospi_enable(DWOSPI);
 
     /* 3. 遍历厂商命令表逐条下发 */
     uint32_t n = sizeof(vendor_specific_init_new) / sizeof(vendor_specific_init_new[0]);
@@ -472,6 +506,53 @@ void LCD_addWindow(uint16_t Xstart, uint16_t Ystart, uint16_t Xend, uint16_t Yen
     lcd_write_color((const uint8_t *)color, pixels * 2);
 }
 
+/*
+ * 仅设置显示窗口坐标（CASET + RASET），不发 RAMWR，不发像素。
+ * 配合 LCD_writeRowData() 使用：先调用本函数锁定矩形区域，
+ * 再逐行调用 LCD_writeRowData()——每次调用内部都会完整发
+ * 0x32(opcode) + 0x002C00(RAMWR addr) + 像素数据，ST77916 会
+ * 按 CASET/RASET 锁定的窗口自动递增地址，逐行填满整块区域。
+ *
+ * 注意：不要在这里额外发 0x2C，否则与 lcd_write_color 里的
+ * instruction/address 相位重复，导致命令帧错位、屏幕不显示。
+ */
+void LCD_setWindow(uint16_t Xstart, uint16_t Ystart, uint16_t Xend, uint16_t Yend)
+{
+    uint8_t caset[4];
+    uint8_t raset[4];
+
+    caset[0] = (uint8_t)(Xstart >> 8);
+    caset[1] = (uint8_t)(Xstart & 0xFF);
+    caset[2] = (uint8_t)(Xend >> 8);
+    caset[3] = (uint8_t)(Xend & 0xFF);
+    lcd_write_cmd(0x2A, caset, 4);
+
+    raset[0] = (uint8_t)(Ystart >> 8);
+    raset[1] = (uint8_t)(Ystart & 0xFF);
+    raset[2] = (uint8_t)(Yend >> 8);
+    raset[3] = (uint8_t)(Yend & 0xFF);
+    lcd_write_cmd(0x2B, raset, 4);
+    /* RAMWR(0x2C) 由 lcd_write_color 内部的 instruction/address 相位自动发出，
+     * 这里不额外发，否则重复触发导致帧头错位 */
+}
+
+/*
+ * 在已由 LCD_setWindow 锁定的窗口中，连续写入一行像素数据。
+ *
+ * 重要限制：lcd_write_color 每次都携带完整的 RAMWR(0x2C) 命令头，
+ * ST77916 每收到一次 RAMWR 就把写指针复位到窗口左上角。
+ * 因此本函数实际上等价于重新发一次 RAMWR + 数据，连续调用时
+ * 每行都从窗口顶部开始写，不能实现真正的"接续写"。
+ *
+ * 使用方式：配合 LCD_setWindow 后逐行调用，每行 y 坐标通过
+ * LCD_setWindow 重新指定，或直接使用 LCD_addWindow 单行方式。
+ * 此接口保留供兼容，内部实现与 lcd_write_color 相同。
+ */
+void LCD_writeRowData(const uint16_t *color, uint16_t count)
+{
+    lcd_write_color((const uint8_t *)color, (uint32_t)count * 2U);
+}
+
 /* ===========================================================================
  * 点亮自测：画几条彩条，验证 QSPI 通路与刷屏
  * =========================================================================*/
@@ -486,7 +567,6 @@ static void test_draw_bitmap(void)
     for (uint32_t b = 0; b < bands; b++) {
         for (uint32_t x = 0; x < EXAMPLE_LCD_WIDTH; x++) {
             line[x] = colors[b];
-            
         }
         uint16_t y0 = (uint16_t)(b * band_h);
         uint16_t y1 = (uint16_t)((b == bands - 1) ? (EXAMPLE_LCD_HEIGHT - 1) : (y0 + band_h - 1));
@@ -495,23 +575,6 @@ static void test_draw_bitmap(void)
         }
     }
     printf("LCD: color bar drawn\r\n");
-}
-
-static void test_solid_fill(void)
-{
-    static uint16_t line[EXAMPLE_LCD_WIDTH];
-    const uint16_t colors[] = {0xF800, 0x07E0, 0x001F}; /* 红、绿、蓝 */
-
-    for (uint32_t c = 0; c < 3; c++) {
-        for (uint32_t x = 0; x < EXAMPLE_LCD_WIDTH; x++) {
-            line[x] = colors[c];
-        }
-        for (uint16_t y = 0; y < EXAMPLE_LCD_HEIGHT; y++) {
-            LCD_addWindow(0, y, EXAMPLE_LCD_WIDTH - 1, y, line);
-        }
-        printf("LCD: solid fill color=0x%04X done\r\n", colors[c]);
-        mdelay(2000);
-    }
 }
 
 /* ===========================================================================
@@ -550,23 +613,10 @@ void Set_Backlight(uint8_t Light)
 /* ===========================================================================
  * 对外初始化总入口
  * =========================================================================*/
-/* 全屏清黑：填充显存为 0x0000，避免 LVGL 启动前 LCD RAM 残留杂色 */
-static void lcd_clear_screen(void)
-{
-    static uint16_t line[EXAMPLE_LCD_WIDTH];
-    memset(line, 0x00, sizeof(line));
-    for (uint16_t y = 0; y < EXAMPLE_LCD_HEIGHT; y++) {
-        LCD_addWindow(0, y, EXAMPLE_LCD_WIDTH - 1, y, line);
-    }
-}
-
 void LCD_Init(void)
 {
     lcd_gpio_init();    /* CS/复位/背光 GPIO 配置 */
     Backlight_Init();   /* 先点亮背光（与显示初始化解耦，便于判断背光是否正常） */
     ST77916_Init();     /* 复位 + OSPI + 命令表 */
-    lcd_clear_screen(); /* 清黑整屏，防止残留杂色 */
-    // test_draw_bitmap(); /* 彩条自测 */
-    // mdelay(2000);
-    // test_solid_fill();  /* 红绿蓝全屏纯色测试 */
+    test_draw_bitmap(); /* 彩条自测 */
 }
